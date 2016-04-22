@@ -1,112 +1,76 @@
 " Vim syntax file
-" Language:	Promela
-" Maintainer:	Pieter Loubser <ploubser@cs.sun.ac.za>
-" Last Change:	04 September 2003
-" Filenames:	*.prom, *.prm, *.promela
-" URL:		http://www.cs.sun.ac.za/~ploubser/
-" Comments:	Promela is a language for describing
-"		protocol validation models in SPIN
+" Language:         ProMeLa
+" Maintainer:       Maurizio Tranchero <maurizio.tranchero@polito.it> - <maurizio.tranchero@gmail.com>
+" First Release:    Mon Oct 16 08:49:46 CEST 2006
+" Last Change:      Thu Aug 7 21:22:48 CEST 2008
+" Version:          0.5
 
-
-" Version 0.2 Changes:
-" #define multi-line highlighting is now fixed, to be one color.
-" Version 0.3 Changes:
-" Other C-like comments '//' highlighting added
-
-
-
-" Clear current syntax from system
+" For version 5.x: Clear all syntax items
+" For version 6.x: Quit when a syntax file was already loaded
 if version < 600
-	syntax clear
+  syntax clear
 elseif exists("b:current_syntax")
-	finish
+  finish
 endif
 
-" Promela is a case sensitive language
-syntax case match
+" case is significant
+" syn case ignore
+" ProMeLa Keywords
+syn keyword promelaStatement    proctype break goto unless
+syn keyword promelaStatement    active assert label atomic d_step
+syn keyword promelaFunctions    skip timeout run init
+syn keyword promelaTodo         contained TODO
+" ProMeLa control flow
+syn keyword promelaConditional  if fi else
+syn keyword promelaRepeat       do od while
+" ProMeLa Types
+syn keyword promelaType         bit bool byte short int hidden chan unsigned
+syn keyword promelaConstant     true false TRUE FALSE
+syn match   promelaNumber       "[+-]\=\<[0-9]\+\>"
+" ProMeLa macros
+syn region  promelaDefine       start="^\s*#\s*\(define\)\>" skip="\\$" end="$" end="//"me=s-1
+syn keyword promelaMacro        inline
+" ProMeLa/Spin LTL
+syn keyword promelaLTL          ltl always eventually
+" Operators and special characters
+syn match promelaOperator   "!"
+syn match promelaOperator   "?"
+syn match promelaOperator   "->"
+syn match promelaOperator   "="
+syn match promelaOperator   "+"
+syn match promelaOperator   "*"
+syn match promelaOperator   "/"
+syn match promelaOperator   "-"
+syn match promelaOperator   "<"
+syn match promelaOperator   ">"
+syn match promelaOperator   "<="
+syn match promelaOperator   ">="
+syn match promelaOperator   "&&"
+syn match promelaSpecial    "\[\]"
+"syn match promelaSpecial    "\]"
+syn match promelaSpecial    ";"
+syn match promelaSpecial    "::"
+" ProMeLa Comments
+syn region promelaComment start="/\*" end="\*/" contains=promelaTodo,@Spell
+syn match  promelaComment "//.*" contains=promelaTodo,@Spell
 
-
-" Some usefull Promela keywords
-syn keyword	promStatement		goto break never skip timeout of
-syn keyword	promStatement		atomic d_step
-syn keyword	promOperator		len printf run
-syn keyword	promFunction		proctype init
-syn keyword	promConditional		if fi assert
-syn keyword	promRepeat		do od
-syn keyword	promType		bool bit byte short int
-syn keyword	promType		chan mtype
-
-
-" Adding matches for special strings in comments
-syn keyword	promTodo	contained TODO FIXME XXX BUG
-syn cluster	cCommentGroup	contains=cTodo
-
-
-" Some special character strings used
-syn match	promFlags	"::\|->"
-syn match	promCommands	"!\|?"
-
-
-" Integer numbers (for both '-' and '+')
-syn match	promNumber	"[+-]\=\<[0-9]\+\>"
-
-
-" Strings (must be able to give arguments to printf-like function)
-syn match	promFormat	display "%\(d\|u\|x\|o\|c\|e\)" contained
-syn match	promFormat	display "%%" contained
-syn match	promFormat	display "\\\(n\|t\|\\\|\"\|\)"  contained
-syn region	promString	start=+"+ skip=+\\"+ end=+"+ contains=promFormat
-
-
-" For C-like comments (comments cannot be nested)
-syn region	promComment	start="/\*" end="\*/" contains=promTodo
-syn match	promCommentError	"\*/"
-syn sync 	ccomment promComment 	minlines=30
-syn region	promCommentL	start="//" skip="\\$" end="$" keepend contains=promTodo
-
-
-" Initialize useful constants
-syn keyword	promConstant	true false TRUE FALSE
-
-
-" Define derivitive (very C-like)
-syn region	promDefine	start="^\s*#\s*\(define\)\>" skip="\\$" end="$" end="//"me=s-1
-
-
-" Define the default highlighting.
-" For version 5.7 and earlier: only when not done already
-" For version 5.8 and later: only when an item doesn't have highlighting yet
-if version >= 508 || !exists("did_c_syn_inits")
-	if version < 508
-		let did_c_syn_inits = 1
-		command -nargs=+ HiLink hi link <args>
-	else
-		command -nargs=+ HiLink hi def link <args>
-	endif
-	HiLink promFlags		Function
-	HiLink promCommands		promSpecial
-	HiLink promFunction		promType
-	HiLink promFormat		promSpecial
-	HiLink promConditional		Conditional
-	HiLink promRepeat		Repeat
-	HiLink promNumber		Number
-	HiLink promOperator		Operator
-	HiLink promDefine		Macro
-	HiLink promSartCommentError	promError
-	HiLink promCommentError		promError
-	HiLink promError		Error
-	HiLink promStatement		Statement
-	HiLink promType			Type
-	HiLink promConstant		Constant
-	HiLink promString		String
-	HiLink promComment		Comment
-	HiLink promSpecial		SpecialChar
-	HiLink promTodo			Todo
-	delcommand HiLink
-endif
+" Class Linking
+hi def link promelaStatement    Statement
+hi def link promelaType         Type
+hi def link promelaComment      Comment
+hi def link promelaOperator     Type
+hi def link promelaSpecial      Special
+hi def link promelaFunctions    Special
+hi def link promelaString       String
+hi def link promelaTodo         Todo
+hi def link promelaConstant     Constant
+hi def link promelaDefine       Macro
+hi def link promelaMacro        Macro
+hi def link promelaRepeat       Repeat
+hi def link promelaConditional  Conditional
+hi def link promelaNumber       Number
+hi def link promelaLTL          Special
 
 let b:current_syntax = "promela"
 
-
-
-" vim: ts=8
+" vim: ts=4 sts=4 sw=4 expandtab
